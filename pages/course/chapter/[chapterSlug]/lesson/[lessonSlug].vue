@@ -25,7 +25,7 @@
 
 		<LessonCompleteButton
 			:model-value="isLessonComplete"
-			@update:model-value="throw createError('Could not update')"
+			@update:model-value="toggleComplete"
 		/>
 	</div>
 </template>
@@ -34,16 +34,37 @@
 	const course = useCourse()
 	const route = useRoute()
 
+	if (route.params.lessonSlug === '3-typing-component-events') {
+		console.log(
+			route.params.paramthatdoesnotexistwhoops.chapitalizeIsNotAMethod()
+		)
+	}
+
 	const chapter = computed(() => {
 		return course.chapters.find(
 			(chapter) => chapter.slug === route.params.chapterSlug
 		)
 	})
+
+	if (!chapter.value) {
+		throw createError({
+			statusCode: 404,
+			message: 'Chapter not found'
+		})
+	}
+
 	const lesson = computed(() => {
 		return chapter.value.lessons.find(
 			(lesson) => lesson.slug === route.params.lessonSlug
 		)
 	})
+
+	if (!lesson.value) {
+		throw createError({
+			statusCode: 404,
+			message: 'Chapter not found'
+		})
+	}
 
 	const title = computed(() => {
 		return `${lesson.value.title} - ${course.title}`
