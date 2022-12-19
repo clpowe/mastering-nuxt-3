@@ -1,15 +1,13 @@
-import course from '@/server/courseData'
-import { Lesson, Chapter, Course, LessonWithPath } from '~/types/course'
+import { Course, Chapter, Lesson, LessonWithPath } from '~/types/course'
+import course from '~/server/courseData'
 
 course as Course
 
 export default defineEventHandler((event): LessonWithPath => {
 	const { chapterSlug, lessonSlug } = event.context.params
 
-	console.log(chapterSlug)
-
 	const chapter: Maybe<Chapter> = course.chapters.find(
-		(chapter: Chapter) => chapter.slug === chapterSlug
+		(chapter) => chapter.slug === chapterSlug
 	)
 
 	if (!chapter) {
@@ -20,7 +18,7 @@ export default defineEventHandler((event): LessonWithPath => {
 	}
 
 	const lesson: Maybe<Lesson> = chapter.lessons.find(
-		(lesson: Lesson) => lesson.slug === lessonSlug
+		(lesson) => lesson.slug === lessonSlug
 	)
 
 	if (!lesson) {
