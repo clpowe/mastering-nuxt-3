@@ -7,5 +7,8 @@ export default defineNuxtConfig({
 		timeline: {
 			enabled: true
 		}
+	},
+	supabase: {
+		redirect: false
 	}
 })
