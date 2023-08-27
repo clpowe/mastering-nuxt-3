@@ -113,3 +113,4 @@
 		</ClientOnly>
 	</div>
 </template>
+server/composables/useCourse
