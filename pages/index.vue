@@ -5,5 +5,5 @@
 </template>
 
 <script setup lant="ts">
-	const firstLesson = useFirstLesson()
+	const firstLesson = await useFirstLesson()
 </script>
