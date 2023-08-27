@@ -4,6 +4,7 @@ import { Lesson, Chapter, Course, LessonWithPath } from '~/types/course'
 course as Course
 
 export default defineEventHandler((event): LessonWithPath => {
+	// @ts-ignore
 	const { chapterSlug, lessonSlug } = event.context.params
 
 	const chapter: Maybe<Chapter> = course.chapters.find(
