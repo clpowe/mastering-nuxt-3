@@ -1,10 +1,17 @@
 <script setup>
 	import { useCourse } from '~/composables/useCourse'
+	import { useCourseProgress } from '~/stores/courseProgress'
 
 	const course = await useCourse()
 	const route = useRoute()
 	const { chapterSlug, lessonSlug } = route.params
 	const lesson = await useLesson(chapterSlug, lessonSlug)
+	const store = useCourseProgress()
+	const { initialize, toggleComplete } = store
+
+	const user = useSupabaseUser()
+
+	initialize()
 
 	definePageMeta({
 		middleware: [
@@ -37,6 +44,11 @@
 			'auth'
 		]
 	})
+
+	const isCompleted = computed(() => {
+		return store.progress?.[chapterSlug]?.[lessonSlug] || false
+	})
+
 	const chapter = computed(() => {
 		return course.value.chapters.find(
 			(chapter) => chapter.slug === route.params.chapterSlug
@@ -50,29 +62,6 @@
 	useHead({
 		title
 	})
-
-	const progress = useLocalStorage('progress', [])
-
-	const isLessonComplete = computed(() => {
-		if (!progress.value[chapter.value.number - 1]) {
-			return false
-		}
-
-		if (!progress.value[chapter.value.number - 1][lesson.value.number - 1]) {
-			return false
-		}
-
-		return progress.value[chapter.value.number - 1][lesson.value.number - 1]
-	})
-
-	const toggleComplete = () => {
-		if (!progress.value[chapter.value.number - 1]) {
-			progress.value[chapter.value.number - 1] = []
-		}
-
-		progress.value[chapter.value.number - 1][lesson.value.number - 1] =
-			!isLessonComplete.value
-	}
 </script>
 
 <template>
@@ -101,7 +90,8 @@
 		<p>{{ lesson.text }}</p>
 		<ClientOnly>
 			<LessonCompleteButton
-				:model-value="isLessonComplete"
+				v-if="user"
+				:model-value="isCompleted"
 				@update:model-value="toggleComplete"
 			/>
 		</ClientOnly>
