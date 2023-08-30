@@ -23,6 +23,7 @@
 
 <script setup>
 	const error = useError()
+	console.error(error)
 	function handleError() {
 		clearError({
 			redirect:

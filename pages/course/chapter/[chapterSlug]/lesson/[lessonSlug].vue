@@ -1,17 +1,17 @@
 <script setup>
 	import { useCourse } from '~/composables/useCourse'
 	import { useCourseProgress } from '~/stores/courseProgress'
+	import { storeToRefs } from 'pinia'
 
 	const course = await useCourse()
 	const route = useRoute()
 	const { chapterSlug, lessonSlug } = route.params
 	const lesson = await useLesson(chapterSlug, lessonSlug)
 	const store = useCourseProgress()
+	const user = useSupabaseUser()
 	const { initialize, toggleComplete } = store
 
-	const user = useSupabaseUser()
-
-	initialize()
+	initialize
 
 	definePageMeta({
 		middleware: [
