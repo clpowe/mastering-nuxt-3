@@ -6,9 +6,11 @@ export default defineNuxtConfig({
 		'@nuxtjs/supabase',
 		'@pinia/nuxt'
 	],
+	routeRules: {
+		'/landing': { prerender: true }
+	},
 	devtools: {
 		enabled: true,
-
 		timeline: {
 			enabled: true
 		}
