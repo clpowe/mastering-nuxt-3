@@ -15,6 +15,10 @@
 							required
 						/>
 					</div>
+
+					<div id="card-element">
+						<!-- Elements will create input elements here -->
+					</div>
 				</div>
 
 				<button
@@ -29,4 +33,80 @@
 
 <script setup>
 	const course = await useCourse()
+	const config = useRuntimeConfig()
+	const stripe = ref(null)
+	const card = ref(null)
+	const email = ref('')
+	const processingPayment = ref(false)
+	const success = ref(false)
+
+	const formStyle = {
+		base: {
+			fontSize: '16px',
+			color: '#3d4852',
+			'::placeholder': {
+				color: '#8795a1'
+			}
+		}
+	}
+
+	const elements = computed(() => stripe.value?.elements())
+
+	function setupStripe() {
+		stripe.value = Stripe(config.public.stripeKey)
+
+		if (!card.value && elements.value) {
+			card.value = elements.value.create('card', {
+				style: formStyle
+			})
+			card.value.mount('#card-element')
+		}
+	}
+
+	const handleSubmit = async () => {
+		if (email.value === '') {
+			return
+		}
+
+		processingPayment.value = true
+		let secret
+
+		try {
+			const response = await $fetch('/api/stripe/paymentIntent', {
+				method: 'POST',
+				body: {
+					email: email.value
+				}
+			})
+			secret = response
+		} catch (error) {
+			console.error(error)
+		}
+
+		try {
+			const response = await stripe.value.confirmCardPayment(secret, {
+				payment_method: {
+					card: card.value
+				},
+				receipt_email: email.value
+			})
+
+			if (response.paymentIntent.status === 'succeded') {
+				success.value = true
+			}
+		} catch (error) {
+			console.error(error)
+		} finally {
+			processingPayment.value = false
+		}
+	}
+
+	useHead({
+		script: [
+			{
+				src: 'https://js.stripe.com/v3/',
+				onload: setupStripe
+			}
+		]
+	})
 </script>
